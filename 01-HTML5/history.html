@@ -1,31 +1,52 @@
-<HTML>
-<TABLE>
-<tr>
-<th>Category</th>
-<th>State</th>
-<th>Last Changed</th>
-</tr>
-<tr>
-<td>Kitchen</td>
-<td>lights Off</td>
-<td>23:40 2018-09-16</td>
-</tr>
-<tr>
-<td>Kitchen</td>
-<td>lights On</td>
-<td>20:30 2018-09-16</td>
-</tr>
-<tr>
-<td>Weather</td>
-<td>Sunset</td>
-<td>20:35 2018-09-16</td>
-</tr>
-<tr>
-<td>Bell</td>
-<td>Ring</td>
-<td>19:30 2018-09-16</td>
-</tr>
-</TABLE>
-</HTML>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History</title>
+</head>
+<body>
 
+  <h1>Home Sweet Home</h1>
 
+  <nav>
+    <ul>
+      <li><a href="index.html">Dashboard</a></li>
+      <li><a href="history.html">History</a></li>
+    </ul>
+  </nav>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>State</th>
+        <th>Last Changed</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!-- rowspan="2" une as duas linhas da Kitchen -->
+        <td rowspan="2">Kitchen lights</td>
+        <td>Off</td>
+        <td>23:40 2018-09-16</td>
+      </tr>
+      <tr>
+        <td>On</td>
+        <td>20:30 2018-09-16</td>
+      </tr>
+      <tr>
+        <td>Weather</td>
+        <td>Sunset</td>
+        <td>20:35 2018-09-16</td>
+      </tr>
+      <tr>
+        <td>Bell</td>
+        <td>Ring</td>
+        <td>19:30 2018-09-16</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
