@@ -9,6 +9,44 @@ import { formatValue, formatTime, toast } from "../utils/format.js";
 let zones = {};
 let external = {};
 
+// Casa 3D (fica null se o Three.js não carregar ou o browser não suportar WebGL)
+let house3d = null;
+let environment3d = null;
+
+/**
+ * Arranca a cena 3D. O import é dinâmico: se o Three.js falhar (sem internet,
+ * sem WebGL…), o resto do painel continua a funcionar normalmente.
+ */
+async function init3D() {
+  const container = document.getElementById("house-3d");
+  try {
+    const { createScene } = await import("../scene3d/scene.js");
+    const { createEnvironment } = await import("../scene3d/environment.js");
+    const { createHouse } = await import("../scene3d/house-builder.js");
+    const { setupPicking } = await import("../scene3d/picking.js");
+
+    const ctx = createScene(container);
+    environment3d = createEnvironment(ctx);
+    house3d = createHouse(ctx, environment3d);
+
+    // Clique numa sala: seleciona-a (o painel lateral com detalhes vem numa fase seguinte)
+    setupPicking(ctx, () => house3d.pickTargets(), (obj) => {
+      const zoneId = obj?.userData.zoneId ?? null;
+      house3d.select(zoneId);
+      $("#house-3d-overlay").text(
+        zoneId ? `Divisão selecionada: ${zones[zoneId]?.name ?? zoneId}` : "Arraste para rodar · roda do rato para zoom · clique numa divisão"
+      );
+    });
+
+    // Desenha com os dados que já tenham chegado
+    house3d.update(zones);
+    environment3d.setDaylight(external.sun?.isDay !== false);
+  } catch (err) {
+    console.error("[3d] não foi possível iniciar a cena 3D:", err);
+    container.innerHTML = `<div class="house-3d-error">Não foi possível mostrar a casa 3D neste browser.</div>`;
+  }
+}
+
 /** Calcula os indicadores gerais a partir de todas as divisões. */
 function computeSummary() {
   const temps = [];
@@ -71,15 +109,19 @@ function renderZones() {
 export function initDashboard() {
   listen(DB.HOME, (home) => home?.name && $("#home-name").text(home.name));
 
+  init3D();
+
   listen(DB.ZONES, (data) => {
     zones = data ?? {};
     renderZones();
     renderGeneralInfo();
+    house3d?.update(zones);
   });
 
   listen(DB.EXTERNAL, (data) => {
     external = data ?? {};
     renderGeneralInfo();
+    environment3d?.setDaylight(external.sun?.isDay !== false);
   });
 
   // Ligar/desligar atuador: a SPA só escreve na BD; o IoT ouve e atua.
