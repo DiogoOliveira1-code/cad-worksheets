@@ -146,6 +146,7 @@ export function initDashboard() {
     onLevel: (path, level) => setActuator(path, { level }),
     // Ao reproduzir um link, liga também a televisão
     onVideoUrl: (path, videoUrl) => setActuator(path, videoUrl ? { videoUrl, state: true } : { videoUrl }),
+    onLedColor: (path, ledColor) => setActuator(path, { ledColor }),
     onClose: closeRoom
   });
 

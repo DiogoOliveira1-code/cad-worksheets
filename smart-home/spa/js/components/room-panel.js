@@ -13,9 +13,10 @@ const SOURCE_TEXT = { node1: "Nó 1", node2: "Nó 2", sim: "Simulado" };
  *   onToggle(path, state)  ligar/desligar um atuador
  *   onLevel(path, level)   mudar o nível (0–100) de um atuador com nível
  *   onVideoUrl(path, url)  mudar o link do vídeo de uma televisão ("" = sem vídeo)
+ *   onLedColor(path, hex)  mudar a cor da fita de LEDs de uma televisão
  *   onClose()              o painel foi fechado
  */
-export function createRoomPanel({ onToggle, onLevel, onVideoUrl, onClose }) {
+export function createRoomPanel({ onToggle, onLevel, onVideoUrl, onLedColor, onClose }) {
   const el = document.getElementById("room-panel");
   const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
   const $title = $("#room-panel-title");
@@ -85,6 +86,12 @@ export function createRoomPanel({ onToggle, onLevel, onVideoUrl, onClose }) {
             </div>
             <div class="form-text">YouTube, Vimeo ou link direto para .mp4/.webm. O vídeo começa sem som.
               Sem link, a TV mostra o canal da casa.</div>
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <i class="fa-solid fa-lightbulb text-secondary"></i>
+              <label class="small mb-0" for="led-${id}">Cor dos LEDs</label>
+              <input type="color" class="form-control form-control-color form-control-sm js-led-color" id="led-${id}"
+                     value="${escapeHtml(a.ledColor ?? "#7c5cff")}" data-path="${path}" title="Cor da fita de LEDs">
+            </div>
           </div>` : ""}
       </li>`;
   }
@@ -126,6 +133,8 @@ export function createRoomPanel({ onToggle, onLevel, onVideoUrl, onClose }) {
     for (const [id, a] of Object.entries(zone.actuators ?? {})) {
       const $row = $body.find(`[data-actuator="${id}"]`);
       $row.find(".js-switch").prop("checked", a.state === true);
+      const $led = $row.find(".js-led-color");
+      if ($led.length && !$led.is(":focus")) $led.val(a.ledColor ?? "#7c5cff");
       const $url = $row.find(".js-video-url");
       if ($url.length && !$url.is(":focus")) $url.val(a.videoUrl ?? "");
       const $level = $row.find(".js-level");
@@ -159,6 +168,9 @@ export function createRoomPanel({ onToggle, onLevel, onVideoUrl, onClose }) {
   });
   $body.on("keydown", ".js-video-url", function (e) {
     if (e.key === "Enter") { e.preventDefault(); playVideo($(this)); }
+  });
+  $body.on("change", ".js-led-color", function () {
+    onLedColor?.($(this).data("path"), this.value);
   });
   $body.on("click", ".js-video-clear", function () {
     $(this).closest(".tv-link").find(".js-video-url").val("");

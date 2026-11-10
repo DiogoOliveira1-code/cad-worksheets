@@ -2,6 +2,8 @@
 //   Desligada            -> ecrã preto
 //   Ligada, com link     -> leitor de vídeo (YouTube, Vimeo ou .mp4/.webm) colocado em 3D sobre o ecrã
 //   Ligada, sem link     -> "canal da casa": hora, tempo exterior, temperatura, CO2 e alertas (dados reais)
+// Atrás do televisor há uma fita de LEDs (cor em /zones/{sala}/actuators/{tv}/ledColor) que acende
+// com a TV: tira luminosa, halo de luz na parede e, exceto na qualidade "low", uma luz real.
 //
 // Porquê um leitor HTML e não uma textura? O YouTube não deixa ler as imagens do vídeo para
 // dentro do WebGL. Por isso o leitor (iframe/video) fica numa camada HTML 3D (CSS3DRenderer,
@@ -19,6 +21,25 @@ const SCREEN_W = 1.3;
 const SCREEN_H = 0.73;
 const PLAYER_W = 1280; // tamanho do leitor em píxeis CSS (16:9); é escalado para o tamanho do ecrã
 const PLAYER_H = 720;
+export const DEFAULT_LED_COLOR = "#7c5cff";
+
+/** Textura do halo dos LEDs: mancha retangular suave, mais forte junto às bordas da TV. */
+let haloTexture = null;
+function getHaloTexture() {
+  if (haloTexture) return haloTexture;
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = 160;
+  const g = c.getContext("2d");
+  const grd = g.createRadialGradient(128, 80, 10, 128, 80, 125);
+  grd.addColorStop(0, "rgba(255,255,255,0.9)");
+  grd.addColorStop(0.45, "rgba(255,255,255,0.55)");
+  grd.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 256, 160);
+  haloTexture = new THREE.CanvasTexture(c);
+  return haloTexture;
+}
 
 // ---------------------------------------------------------------------------
 // Links de vídeo -> leitor
@@ -176,6 +197,49 @@ export function createTv(_def, _roomSize, ctx) {
   foot.position.set(0, 0.49, -0.06);
   object.add(foot);
 
+  // ---- Fita de LEDs atrás do televisor -----------------------------------------
+  const ledMat = new THREE.MeshStandardMaterial({ color: 0x111111, emissive: DEFAULT_LED_COLOR, emissiveIntensity: 0 });
+  const backZ = -0.06 - 0.025 - 0.008;            // logo atrás da moldura
+  const lw = SCREEN_W - 0.12, lh = SCREEN_H - 0.12, t = 0.014;
+  for (const [w, h, x, y] of [[lw, t, 0, lh / 2], [lw, t, 0, -lh / 2], [t, lh, -lw / 2, 0], [t, lh, lw / 2, 0]]) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(w, h, t), ledMat);
+    strip.position.set(x, screenY + y, backZ);
+    object.add(strip);
+  }
+
+  // Halo na parede: plano com brilho suave, somado à imagem (não tapa nada)
+  const haloMat = new THREE.MeshBasicMaterial({
+    map: getHaloTexture(), color: DEFAULT_LED_COLOR, transparent: true, opacity: 0,
+    blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false
+  });
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN_W + 1.0, SCREEN_H + 0.7), haloMat);
+  halo.position.set(0, screenY, backZ - 0.05);
+  halo.renderOrder = 1;
+  object.add(halo);
+
+  // Luz real (ilumina a parede e o móvel); não existe na qualidade "low"
+  const ledLight = QUALITY_LEVEL === "low" ? null : new THREE.PointLight(DEFAULT_LED_COLOR, 0, 3, 2);
+  if (ledLight) {
+    ledLight.position.set(0, screenY, backZ - 0.15);
+    object.add(ledLight);
+  }
+  let ledLevel = 0; // 0 = apagados, 1 = acesos (transição suave)
+
+  function setLedColor(hex) {
+    const color = /^#[0-9a-f]{6}$/i.test(hex ?? "") ? hex : DEFAULT_LED_COLOR;
+    ledMat.emissive.set(color);
+    haloMat.color.set(color);
+    ledLight?.color.set(color);
+  }
+
+  function animateLeds(dt) {
+    ledLevel += ((on ? 1 : 0) - ledLevel) * Math.min(1, dt * 4);
+    ledMat.emissiveIntensity = ledLevel * 8;   // muito brilhante: ganha o efeito de brilho (bloom)
+    haloMat.opacity = ledLevel * 0.55;
+    halo.visible = ledLevel > 0.01;
+    if (ledLight) ledLight.intensity = ledLevel * 2.5;
+  }
+
   // Ecrã: material sem iluminação (brilha por si, como um ecrã real)
   const screenMat = new THREE.MeshBasicMaterial({ color: 0x050505, toneMapped: false });
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN_W, SCREEN_H), screenMat);
@@ -265,6 +329,7 @@ export function createTv(_def, _roomSize, ctx) {
       if (on && url) ensurePlayer();
       else removePlayer();
       if (!on) setScreen(null, 0x050505);
+      setLedColor(def.ledColor);
 
       // Vira-se para dentro da sala conforme a parede mais próxima
       const px = def.pos?.x ?? 0.5;
@@ -274,6 +339,7 @@ export function createTv(_def, _roomSize, ctx) {
       object.rotation.y = { n: 0, s: Math.PI, w: Math.PI / 2, e: -Math.PI / 2 }[nearest];
     },
     tick(dt) {
+      animateLeds(dt);
       if (!on) return;
 
       if (player) {
