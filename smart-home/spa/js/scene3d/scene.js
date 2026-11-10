@@ -7,15 +7,21 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
+import { QUALITY } from "./quality.js";
 
 const TOP_VIEW_SIZE = 20; // metros visíveis na vertical com zoom 1 (vista de topo)
 
 export function createScene(container, { topView = false } = {}) {
   // Renderer WebGL (o desenho 3D)
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, QUALITY.pixelRatio));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  if (!topView) {
+    // Tons de cor "cinematográficos" (ACES): luzes fortes e sombras com aspeto natural
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.85;
+  }
   renderer.domElement.classList.add("house-3d-canvas");
   container.appendChild(renderer.domElement);
 

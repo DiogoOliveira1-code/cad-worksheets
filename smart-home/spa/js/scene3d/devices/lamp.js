@@ -40,9 +40,9 @@ export function createLamp() {
     object,
     update(def) {
       const on = def.state === true;
-      target = on ? 6 : 0;
+      target = on ? 9 : 0;
       bulbMat.emissive.setHex(on ? 0xffc870 : 0x000000);
-      bulbMat.emissiveIntensity = on ? 2 : 0;
+      bulbMat.emissiveIntensity = on ? 10 : 0; // muito brilhante: ganha o efeito de brilho (bloom)
       shadeMat.emissive.setHex(on ? 0x6a5530 : 0x000000);
     },
     tick(dt) {

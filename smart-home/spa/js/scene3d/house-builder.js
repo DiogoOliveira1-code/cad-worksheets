@@ -101,13 +101,17 @@ export function createHouse(ctx, environment = null) {
       }
     }
 
-    // Se a planta mudou (salas adicionadas/movidas), volta a enquadrar a câmara
-    const key = JSON.stringify(Object.entries(zones).map(([id, z]) => [id, z.layout]));
+    // Se a planta mudou (salas adicionadas/movidas/de outro tipo), avisa o ambiente
+    // (exterior, sombras) e, da primeira vez, enquadra a câmara
+    const key = JSON.stringify(Object.entries(zones).map(([id, z]) => [id, z.layout, z.roomType]));
     if (key !== layoutKey) {
       layoutKey = key;
-      const box = new THREE.Box3().setFromObject(root);
+      const box = houseBox();
       if (!box.isEmpty()) {
-        environment?.centerOn(box.getCenter(new THREE.Vector3()));
+        const plan = Object.entries(zones)
+          .filter(([, z]) => z.layout)
+          .map(([id, z]) => ({ ...z.layout, roomType: z.roomType, outdoor: !!rooms.get(id)?.outdoor }));
+        environment?.setHouse(box, plan);
         if (!framedOnce) { ctx.frame(box); framedOnce = true; }
       }
     }

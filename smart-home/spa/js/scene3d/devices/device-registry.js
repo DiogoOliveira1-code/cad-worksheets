@@ -8,6 +8,7 @@ import { createBuzzer } from "./buzzer.js";
 import { createIrBarrier } from "./ir-barrier.js";
 import { createBlinds } from "./blinds.js";
 import { createSensorProbe } from "./sensor-probe.js";
+import { createSprinkler } from "./sprinkler.js";
 
 const ACTUATORS = {
   light: createLamp,
@@ -15,7 +16,8 @@ const ACTUATORS = {
   fan: createFan,
   hvac: createFan,
   buzzer: createBuzzer,
-  blinds: createBlinds
+  blinds: createBlinds,
+  irrigation: createSprinkler
 };
 
 const SENSORS = {
@@ -46,7 +48,7 @@ export function createDevice(kind, def, roomSize) {
   return device;
 }
 
-// Atuadores sem modelo próprio (rega, tomada, fechadura…): um módulo com luz de estado
+// Atuadores sem modelo próprio (tomada, fechadura…): um módulo com luz de estado
 function createGenericActuator(def) {
   const object = new THREE.Group();
 

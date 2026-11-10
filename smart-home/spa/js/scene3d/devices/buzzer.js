@@ -12,7 +12,7 @@ export function createBuzzer() {
   body.castShadow = true;
   object.add(body);
 
-  const topMat = new THREE.MeshStandardMaterial({ color: 0x8a2a2a, emissive: 0x000000 });
+  const topMat = new THREE.MeshStandardMaterial({ color: 0x8a2a2a, emissive: 0x000000, emissiveIntensity: 6 });
   const top = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2), topMat);
   top.position.y = 0.2;
   object.add(top);
