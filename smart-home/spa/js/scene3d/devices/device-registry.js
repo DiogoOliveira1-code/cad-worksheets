@@ -9,6 +9,7 @@ import { createIrBarrier } from "./ir-barrier.js";
 import { createBlinds } from "./blinds.js";
 import { createSensorProbe } from "./sensor-probe.js";
 import { createSprinkler } from "./sprinkler.js";
+import { createTv } from "./tv.js";
 
 const ACTUATORS = {
   light: createLamp,
@@ -17,7 +18,8 @@ const ACTUATORS = {
   hvac: createFan,
   buzzer: createBuzzer,
   blinds: createBlinds,
-  irrigation: createSprinkler
+  irrigation: createSprinkler,
+  tv: createTv
 };
 
 const SENSORS = {
@@ -28,16 +30,18 @@ const SENSORS = {
  * @param {"sensors"|"actuators"} kind
  * @param {object} def        dados do dispositivo (type, value/state, level…)
  * @param {{w:number,h:number}} roomSize
+ * @param {object} ctx       contexto da cena (alguns dispositivos, como a TV, precisam dele)
  */
-export function createDevice(kind, def, roomSize) {
+export function createDevice(kind, def, roomSize, ctx) {
   const factory = kind === "sensors"
     ? (SENSORS[def.type] ?? createSensorProbe)
     : (ACTUATORS[def.type] ?? createGenericActuator);
 
-  const device = factory(def, roomSize);
+  const device = factory(def, roomSize, ctx);
   device.object.name = `device:${def.type}`;
 
   device.dispose = () => {
+    device.destroy?.(); // limpeza própria do dispositivo (ex.: leitor de vídeo da TV)
     device.object.traverse((o) => {
       if (o.isCSS2DObject) o.element.remove();
       o.geometry?.dispose();

@@ -34,6 +34,7 @@ export const ACTUATOR_TYPES = {
   relay:      { label: "Relé",             icon: "fa-toggle-on" },
   fan:        { label: "Ventoinha",        icon: "fa-fan", hasLevel: true },
   buzzer:     { label: "Alarme sonoro",    icon: "fa-bell" },
+  tv:         { label: "Televisão",        icon: "fa-tv", hasVideo: true }, // hasVideo: aceita um link de vídeo
   hvac:       { label: "Ar condicionado",  icon: "fa-snowflake" },
   blinds:     { label: "Estores",          icon: "fa-bars-staggered", on: "Fechados", off: "Abertos" },
   irrigation: { label: "Rega",             icon: "fa-shower" },

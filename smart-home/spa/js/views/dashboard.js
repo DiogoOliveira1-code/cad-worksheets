@@ -144,6 +144,8 @@ export function initDashboard() {
   panel = createRoomPanel({
     onToggle: (path, state) => setActuator(path, { state }),
     onLevel: (path, level) => setActuator(path, { level }),
+    // Ao reproduzir um link, liga também a televisão
+    onVideoUrl: (path, videoUrl) => setActuator(path, videoUrl ? { videoUrl, state: true } : { videoUrl }),
     onClose: closeRoom
   });
 

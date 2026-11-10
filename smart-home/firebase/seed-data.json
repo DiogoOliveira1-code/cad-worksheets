@@ -146,6 +146,19 @@
             "y": 0.9
           },
           "updatedAt": ""
+        },
+        "sala_tv": {
+          "type": "tv",
+          "name": "Televisão",
+          "state": true,
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.5,
+            "y": 0.06
+          },
+          "videoUrl": "",
+          "updatedAt": ""
         }
       }
     },

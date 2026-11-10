@@ -40,7 +40,8 @@ let store = {
       },
       actuators: {
         sala_luz:    { type: "light",  name: "Iluminação", state: true,  simulated: true, source: "sim", pos: { x: 0.5, y: 0.5 } },
-        sala_estore: { type: "blinds", name: "Estores",    state: false, simulated: true, source: "sim", pos: { x: 0.5, y: 0.9 } }
+        sala_estore: { type: "blinds", name: "Estores",    state: false, simulated: true, source: "sim", pos: { x: 0.5, y: 0.9 } },
+        sala_tv:     { type: "tv",     name: "Televisão",  state: true,  simulated: true, source: "sim", pos: { x: 0.5, y: 0.06 }, videoUrl: "" }
       }
     },
     cozinha: {

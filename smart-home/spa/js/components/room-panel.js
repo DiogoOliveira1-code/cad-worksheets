@@ -12,9 +12,10 @@ const SOURCE_TEXT = { node1: "Nó 1", node2: "Nó 2", sim: "Simulado" };
  * @param {object} handlers
  *   onToggle(path, state)  ligar/desligar um atuador
  *   onLevel(path, level)   mudar o nível (0–100) de um atuador com nível
+ *   onVideoUrl(path, url)  mudar o link do vídeo de uma televisão ("" = sem vídeo)
  *   onClose()              o painel foi fechado
  */
-export function createRoomPanel({ onToggle, onLevel, onClose }) {
+export function createRoomPanel({ onToggle, onLevel, onVideoUrl, onClose }) {
   const el = document.getElementById("room-panel");
   const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
   const $title = $("#room-panel-title");
@@ -70,6 +71,21 @@ export function createRoomPanel({ onToggle, onLevel, onClose }) {
             <input type="range" class="form-range js-level" min="0" max="100" step="5" value="${level}" data-path="${path}">
             <span class="small js-level-text" style="min-width:3rem">${level} %</span>
           </div>` : ""}
+        ${type.hasVideo ? `
+          <div class="mt-2 tv-link">
+            <div class="input-group input-group-sm">
+              <input type="url" class="form-control js-video-url" placeholder="Link do vídeo"
+                     value="${escapeHtml(a.videoUrl ?? "")}" data-path="${path}">
+              <button type="button" class="btn btn-outline-primary js-video-play" data-path="${path}" title="Reproduzir">
+                <i class="fa-solid fa-play"></i>
+              </button>
+              <button type="button" class="btn btn-outline-secondary js-video-clear" data-path="${path}" title="Limpar">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div class="form-text">YouTube, Vimeo ou link direto para .mp4/.webm. O vídeo começa sem som.
+              Sem link, a TV mostra o canal da casa.</div>
+          </div>` : ""}
       </li>`;
   }
 
@@ -110,6 +126,8 @@ export function createRoomPanel({ onToggle, onLevel, onClose }) {
     for (const [id, a] of Object.entries(zone.actuators ?? {})) {
       const $row = $body.find(`[data-actuator="${id}"]`);
       $row.find(".js-switch").prop("checked", a.state === true);
+      const $url = $row.find(".js-video-url");
+      if ($url.length && !$url.is(":focus")) $url.val(a.videoUrl ?? "");
       const $level = $row.find(".js-level");
       if ($level.length && !$level.is(":active") && typeof a.level === "number") {
         $level.val(a.level);
@@ -134,6 +152,17 @@ export function createRoomPanel({ onToggle, onLevel, onClose }) {
   });
   $body.on("change", ".js-level", function () {
     onLevel?.($(this).data("path"), Number(this.value));
+  });
+  const playVideo = ($input) => onVideoUrl?.($input.data("path"), $input.val().trim());
+  $body.on("click", ".js-video-play", function () {
+    playVideo($(this).closest(".tv-link").find(".js-video-url"));
+  });
+  $body.on("keydown", ".js-video-url", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); playVideo($(this)); }
+  });
+  $body.on("click", ".js-video-clear", function () {
+    $(this).closest(".tv-link").find(".js-video-url").val("");
+    onVideoUrl?.($(this).data("path"), "");
   });
 
   // ---- API ----------------------------------------------------------------

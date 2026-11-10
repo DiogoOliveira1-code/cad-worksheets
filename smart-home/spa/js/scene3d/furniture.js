@@ -47,13 +47,6 @@ const PIECES = {
       ...[[-0.5, -0.25], [0.5, -0.25], [-0.5, 0.25], [0.5, 0.25]].map(([x, z]) => box(0.05, 0.38, 0.05, mat("darkMetal"), x, 0, z))
     );
   },
-  tvUnit(w = 1.8) {
-    return group(
-      box(w, 0.45, 0.42, mat("woodFurniture")),
-      box(1.3, 0.75, 0.05, mat("screen"), 0, 0.55, -0.08),
-      box(0.3, 0.05, 0.2, mat("darkMetal"), 0, 0.45, -0.08)
-    );
-  },
   rug(w, d) {
     const r = new THREE.Mesh(new THREE.BoxGeometry(w, 0.015, d), fabric(0xb9a88e));
     r.position.y = 0.008;
@@ -221,7 +214,6 @@ function layoutFor(type, w, h) {
       if (sofaW >= 1.4) add("sofa", [sofaW], w / 2, h - 0.65, S, sofaW, 0.9);
       add("rug", [Math.min(2.4, w - 1.6), Math.min(1.6, h - 2.6)], w / 2, h / 2 + 0.2, N, 0, 0);
       add("coffeeTable", [], w / 2, h / 2 + 0.3, N, 1.1, 0.6);
-      add("tvUnit", [Math.min(1.8, w - 1.4)], w / 2, 0.33, N, 1.8, 0.45);
       add("plant", [], 0.45, h - 0.45, N, 0.4, 0.4);
       add("plant", [], w - 0.45, 0.45, N, 0.4, 0.4);
       break;

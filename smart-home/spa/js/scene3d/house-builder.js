@@ -46,7 +46,7 @@ export function createHouse(ctx, environment = null) {
           entry = null;
         }
         if (!entry) {
-          const device = createDevice(kind, def, room.size);
+          const device = createDevice(kind, def, room.size, ctx);
           // Referência usada pelo editor para saber que dispositivo foi clicado
           device.object.userData.deviceRef = { zoneId, kind, id };
           room.devices.add(device.object);

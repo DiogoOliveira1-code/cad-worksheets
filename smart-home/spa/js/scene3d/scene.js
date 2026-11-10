@@ -13,6 +13,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
+import { CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
 import { QUALITY, saveLowerQuality } from "./quality.js";
 
 const TOP_VIEW_SIZE = 20; // metros visíveis na vertical com zoom 1 (vista de topo)
@@ -30,6 +31,13 @@ export function createScene(container, { topView = false } = {}) {
   }
   renderer.domElement.classList.add("house-3d-canvas");
   container.appendChild(renderer.domElement);
+
+  // Camada de elementos HTML colocados em 3D (ex.: o leitor de vídeo no ecrã da TV).
+  // Tem a sua própria cena (cssScene); fica por cima do canvas e por baixo das etiquetas.
+  const cssRenderer = new CSS3DRenderer();
+  cssRenderer.domElement.classList.add("house-3d-css3d");
+  container.appendChild(cssRenderer.domElement);
+  const cssScene = new THREE.Scene();
 
   // Renderer de etiquetas HTML (valores dos sensores, nomes das salas) por cima do 3D
   const labelRenderer = new CSS2DRenderer();
@@ -72,6 +80,7 @@ export function createScene(container, { topView = false } = {}) {
     const h = container.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h);
+    cssRenderer.setSize(w, h);
     labelRenderer.setSize(w, h);
     const aspect = w / h;
     if (camera.isOrthographicCamera) {
@@ -166,6 +175,7 @@ export function createScene(container, { topView = false } = {}) {
     for (const fn of frameCallbacks) fn(dt, t);
     controls.update();
     renderFn();
+    cssRenderer.render(cssScene, camera);
     labelRenderer.render(scene, camera);
     checkPerformance(dt);
   });
@@ -183,6 +193,8 @@ export function createScene(container, { topView = false } = {}) {
     renderer.dispose();
     renderer.forceContextLoss();
     renderer.domElement.remove();
+    cssScene.traverse((o) => { if (o.isCSS3DObject) o.element.remove(); });
+    cssRenderer.domElement.remove();
     labelRenderer.domElement.remove();
     notice.remove();
   }
@@ -218,6 +230,7 @@ export function createScene(container, { topView = false } = {}) {
     THREE,
     container,
     scene,
+    cssScene,
     camera,
     renderer,
     controls,
