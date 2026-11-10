@@ -107,8 +107,26 @@ export function createHouse(ctx, environment) {
     }
   }
 
+  /** Caixa que envolve uma sala (só chão e paredes, sem etiquetas). */
+  function roomBox(zoneId) {
+    const room = rooms.get(zoneId);
+    if (!room) return null;
+    const { w, h } = room.size;
+    const p = room.group.position;
+    return new THREE.Box3(new THREE.Vector3(p.x, 0, p.z), new THREE.Vector3(p.x + w, 1, p.z + h));
+  }
+
+  /** Caixa que envolve a casa toda. */
+  function houseBox() {
+    const box = new THREE.Box3();
+    for (const id of rooms.keys()) box.union(roomBox(id));
+    return box;
+  }
+
   return {
     update,
+    roomBox,
+    houseBox,
     /** Objetos clicáveis: o chão de cada sala. */
     pickTargets: () => [...rooms.values()].map((r) => r.floor),
     select(zoneId) {

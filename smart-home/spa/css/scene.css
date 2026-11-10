@@ -83,3 +83,15 @@
   border-color: #e24b4a;
   color: #842029;
 }
+
+/* Painel lateral da divisão */
+.offcanvas.room-panel {
+  --bs-offcanvas-width: 380px;
+  top: 56px; /* por baixo da navbar */
+  height: calc(100% - 56px);
+}
+
+.room-panel .list-group-item {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
