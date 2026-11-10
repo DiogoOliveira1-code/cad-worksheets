@@ -1,0 +1,19 @@
+{
+  "name": "smart-home-iot",
+  "version": "1.0.0",
+  "description": "Aplicação IoT (Raspberry Pi) do projeto Smart Home - DAM 2026/2027",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "mock": "node src/main.js --mock"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  },
+  "optionalDependencies": {
+    "onoff": "^6.0.3"
+  }
+}

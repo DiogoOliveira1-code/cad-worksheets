@@ -1,0 +1,89 @@
+{
+  "home": { "name": "Casa Inteligente" },
+  "zones": {
+    "sala": {
+      "name": "Sala",
+      "icon": "fa-couch",
+      "order": 1,
+      "sensors": {
+        "sala_temp":  { "type": "temperature", "name": "Temperatura", "value": 21, "unit": "°C",  "simulated": true,  "updatedAt": "" },
+        "sala_lux":   { "type": "luminosity",  "name": "Luminosidade", "value": 300, "unit": "lx", "simulated": true,  "updatedAt": "" },
+        "sala_pir":   { "type": "motion",      "name": "Movimento",   "value": false, "unit": "",  "simulated": false, "gpio": 27, "updatedAt": "" },
+        "sala_power": { "type": "power",       "name": "Consumo",     "value": 120, "unit": "W",   "simulated": true,  "updatedAt": "" }
+      },
+      "actuators": {
+        "sala_luz":    { "type": "light",  "name": "Iluminação", "state": false, "simulated": false, "gpio": 17, "updatedAt": "" },
+        "sala_estore": { "type": "blinds", "name": "Estores",    "state": false, "simulated": true,  "updatedAt": "" }
+      }
+    },
+    "cozinha": {
+      "name": "Cozinha",
+      "icon": "fa-kitchen-set",
+      "order": 2,
+      "sensors": {
+        "cozinha_temp": { "type": "temperature", "name": "Temperatura",       "value": 22, "unit": "°C",  "simulated": true, "updatedAt": "" },
+        "cozinha_hum":  { "type": "humidity",    "name": "Humidade",          "value": 55, "unit": "%",   "simulated": true, "updatedAt": "" },
+        "cozinha_air":  { "type": "air_quality", "name": "Qualidade do ar",   "value": 600, "unit": "ppm", "simulated": true, "updatedAt": "" },
+        "cozinha_door": { "type": "contact",     "name": "Janela",            "value": false, "unit": "", "simulated": true, "updatedAt": "" }
+      },
+      "actuators": {
+        "cozinha_ac":     { "type": "hvac",   "name": "Ar condicionado", "state": false, "simulated": true, "updatedAt": "" },
+        "cozinha_tomada": { "type": "socket", "name": "Tomada",          "state": true,  "simulated": true, "updatedAt": "" }
+      }
+    },
+    "jardim": {
+      "name": "Jardim",
+      "icon": "fa-seedling",
+      "order": 3,
+      "sensors": {
+        "jardim_soil": { "type": "soil_moisture", "name": "Humidade do solo", "value": 40, "unit": "%", "simulated": true, "updatedAt": "" }
+      },
+      "actuators": {
+        "jardim_rega": { "type": "irrigation", "name": "Rega", "state": false, "simulated": true, "updatedAt": "" }
+      }
+    }
+  },
+  "rules": {
+    "regra_luz_movimento": {
+      "name": "Luz da sala com movimento",
+      "enabled": true,
+      "logic": "AND",
+      "conditions": [
+        { "source": "sensor", "path": "zones/sala/sensors/sala_pir/value", "operator": "==", "value": true },
+        { "source": "sensor", "path": "zones/sala/sensors/sala_lux/value", "operator": "<",  "value": 200 }
+      ],
+      "actions": [
+        { "type": "actuator", "path": "zones/sala/actuators/sala_luz/state", "state": true }
+      ]
+    },
+    "regra_estores_calor": {
+      "name": "Fechar estores com calor exterior",
+      "enabled": true,
+      "logic": "AND",
+      "conditions": [
+        { "source": "external", "path": "external/weather/temperature", "operator": ">", "value": 28 }
+      ],
+      "actions": [
+        { "type": "actuator", "path": "zones/sala/actuators/sala_estore/state", "state": true }
+      ]
+    },
+    "regra_ar": {
+      "name": "Alerta de qualidade do ar",
+      "enabled": true,
+      "logic": "AND",
+      "conditions": [
+        { "source": "sensor", "path": "zones/cozinha/sensors/cozinha_air/value", "operator": ">", "value": 1000 }
+      ],
+      "actions": [
+        { "type": "alert", "message": "Qualidade do ar na cozinha abaixo do nível seguro", "level": "danger" }
+      ]
+    }
+  },
+  "alerts": {},
+  "external": {
+    "weather":    { "temperature": null, "humidity": null, "windSpeed": null, "weatherCode": null },
+    "airQuality": { "europeanAqi": null, "pm2_5": null, "pm10": null },
+    "sun":        { "sunrise": null, "sunset": null, "isDay": null },
+    "updatedAt": null
+  }
+}
