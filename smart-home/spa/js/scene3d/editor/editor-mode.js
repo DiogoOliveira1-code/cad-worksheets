@@ -194,7 +194,7 @@ export function createEditor(container, cb) {
   canvas.addEventListener("pointercancel", endDrag);
 
   // Tecla Delete/Backspace apaga a seleção (só com o editor visível)
-  window.addEventListener("keydown", (e) => {
+  function onKey(e) {
     if (container.offsetParent === null || !selection) return;
     if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
     if (e.key === "Delete" || e.key === "Backspace") {
@@ -202,7 +202,8 @@ export function createEditor(container, cb) {
       cb.onDeleteKey?.(selection);
     }
     if (e.key === "Escape") select(null);
-  });
+  }
+  window.addEventListener("keydown", onKey);
 
   let framed = false;
 
@@ -230,6 +231,11 @@ export function createEditor(container, cb) {
     get mode() { return mode; },
     select,
     get selection() { return selection; },
+    /** Liberta a placa gráfica (chamado ao sair do ecrã do editor). */
+    dispose() {
+      window.removeEventListener("keydown", onKey);
+      ctx.dispose();
+    },
     /** Enquadra a casa toda. */
     frameAll() {
       const box = house.houseBox();

@@ -207,7 +207,14 @@ function bindEvents() {
 }
 
 // ---- Arranque ---------------------------------------------------------------
+// O 3D do editor só existe enquanto o ecrã "Dispositivos" está aberto: assim nunca há
+// dois motores 3D a usar a placa gráfica ao mesmo tempo.
+const isEditorRoute = () => location.hash === "#dispositivos";
+let starting = false;
+
 async function initEditor() {
+  if (editor || starting) return;
+  starting = true;
   try {
     const { createEditor } = await import("../scene3d/editor/editor-mode.js");
     editor = createEditor(document.getElementById("editor-3d"), {
@@ -220,10 +227,26 @@ async function initEditor() {
     });
     editor.setZones(zones);
     setMode("select");
+    // Se entretanto o utilizador já saiu do ecrã, liberta logo
+    if (!isEditorRoute()) disposeEditor();
   } catch (err) {
     console.error("[editor] não foi possível iniciar o editor 3D:", err);
     $("#editor-3d").html(`<div class="house-3d-error">Não foi possível mostrar o editor neste browser.</div>`);
+  } finally {
+    starting = false;
   }
+}
+
+function disposeEditor() {
+  if (!editor) return;
+  editor.dispose();
+  editor = null;
+  renderProps();
+}
+
+function onRoute() {
+  if (isEditorRoute()) initEditor();
+  else disposeEditor();
 }
 
 export function initDevices() {
@@ -231,7 +254,8 @@ export function initDevices() {
   renderPalette();
   bindEvents();
   renderProps();
-  initEditor();
+  window.addEventListener("hashchange", onRoute);
+  onRoute();
 
   listen(DB.ZONES, (data) => {
     zones = data ?? {};

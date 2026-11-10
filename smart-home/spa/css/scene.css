@@ -118,3 +118,18 @@
 .device-palette .btn.active {
   color: #fff;
 }
+
+/* Aviso dentro da área 3D (placa gráfica reiniciou / qualidade reduzida) */
+.house-3d-notice {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 3;
+  max-width: 320px;
+  font-size: 0.85rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #f0a020;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

@@ -20,12 +20,19 @@ export function createPostprocessing(ctx, quality) {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
+  // Oclusão ambiente a meia resolução: é o efeito mais pesado e assim custa ~4x menos
   let gtao = null;
+  const halfAO = () => {
+    if (!gtao) return;
+    const size = renderer.getDrawingBufferSize(new THREE.Vector2());
+    gtao.setSize(Math.max(1, Math.floor(size.x / 2)), Math.max(1, Math.floor(size.y / 2)));
+  };
   if (quality.ao) {
-    gtao = new GTAOPass(scene, camera, w, h);
+    gtao = new GTAOPass(scene, camera, w / 2, h / 2);
     gtao.blendIntensity = 0.85;
     gtao.updateGtaoMaterial({ radius: 0.5, distanceExponent: 1, thickness: 1, scale: 1 });
     composer.addPass(gtao);
+    halfAO(); // addPass repõe o tamanho completo; volta a meia resolução
   }
 
   if (quality.bloom) {
@@ -38,7 +45,7 @@ export function createPostprocessing(ctx, quality) {
   ctx.setRenderFn(() => composer.render());
   ctx.onResize((width, height) => {
     composer.setSize(width, height);
-    gtao?.setSize(width, height);
+    halfAO();
   });
 
   return composer;
