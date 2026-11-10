@@ -68,3 +68,23 @@ export const EXTERNAL_FIELDS = {
 };
 
 export const ZONE_ICONS = ["fa-couch", "fa-kitchen-set", "fa-bed", "fa-bath", "fa-car", "fa-seedling", "fa-briefcase", "fa-house"];
+
+// Tipos de divisão (editor do ecrã 3). Definem o ícone, o chão e a mobília da casa 3D.
+//   outdoor: divisão exterior (sem paredes, chão de relva)
+export const ROOM_TYPES = {
+  living:   { label: "Sala",                icon: "fa-couch" },
+  kitchen:  { label: "Cozinha",             icon: "fa-kitchen-set" },
+  bedroom:  { label: "Quarto",              icon: "fa-bed" },
+  bathroom: { label: "Casa de banho",       icon: "fa-bath" },
+  entrance: { label: "Entrada / corredor",  icon: "fa-door-open" },
+  office:   { label: "Escritório",          icon: "fa-briefcase" },
+  garage:   { label: "Garagem",             icon: "fa-car" },
+  garden:   { label: "Jardim / exterior",   icon: "fa-seedling", outdoor: true }
+};
+
+// De onde vêm os dados de cada dispositivo
+export const DEVICE_SOURCES = {
+  node1: "Nó 1 (PIC + ESP32)",
+  node2: "Nó 2 (ESP32 + BME680/CCS811)",
+  sim:   "Simulado"
+};

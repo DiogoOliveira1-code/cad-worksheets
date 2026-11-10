@@ -1,89 +1,401 @@
 {
-  "home": { "name": "Casa Inteligente" },
+  "home": {
+    "name": "Casa Inteligente"
+  },
   "zones": {
-    "sala": {
-      "name": "Sala",
-      "icon": "fa-couch",
+    "entrada": {
+      "name": "Entrada",
+      "roomType": "entrance",
+      "icon": "fa-door-open",
       "order": 1,
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
       "sensors": {
-        "sala_temp":  { "type": "temperature", "name": "Temperatura", "value": 21, "unit": "°C",  "simulated": true,  "updatedAt": "" },
-        "sala_lux":   { "type": "luminosity",  "name": "Luminosidade", "value": 300, "unit": "lx", "simulated": true,  "updatedAt": "" },
-        "sala_pir":   { "type": "motion",      "name": "Movimento",   "value": false, "unit": "",  "simulated": false, "gpio": 27, "updatedAt": "" },
-        "sala_power": { "type": "power",       "name": "Consumo",     "value": 120, "unit": "W",   "simulated": true,  "updatedAt": "" }
+        "entrada_ir": {
+          "type": "ir_barrier",
+          "name": "Barreira IR",
+          "value": false,
+          "unit": "",
+          "simulated": false,
+          "source": "node1",
+          "pos": {
+            "x": 0.5,
+            "y": 0.15
+          },
+          "updatedAt": ""
+        },
+        "entrada_ldr": {
+          "type": "luminosity",
+          "name": "Luminosidade",
+          "value": 320,
+          "unit": "lx",
+          "simulated": false,
+          "source": "node1",
+          "pos": {
+            "x": 0.2,
+            "y": 0.7
+          },
+          "updatedAt": ""
+        },
+        "entrada_sound": {
+          "type": "sound",
+          "name": "Nível sonoro",
+          "value": 42,
+          "unit": "dB",
+          "simulated": false,
+          "source": "node1",
+          "pos": {
+            "x": 0.8,
+            "y": 0.7
+          },
+          "updatedAt": ""
+        }
       },
       "actuators": {
-        "sala_luz":    { "type": "light",  "name": "Iluminação", "state": false, "simulated": false, "gpio": 17, "updatedAt": "" },
-        "sala_estore": { "type": "blinds", "name": "Estores",    "state": false, "simulated": true,  "updatedAt": "" }
+        "entrada_luz": {
+          "type": "relay",
+          "name": "Luz da entrada",
+          "state": false,
+          "simulated": false,
+          "source": "node1",
+          "pos": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "updatedAt": ""
+        }
+      }
+    },
+    "sala": {
+      "name": "Sala",
+      "roomType": "living",
+      "icon": "fa-couch",
+      "order": 2,
+      "layout": {
+        "x": 0,
+        "y": 4,
+        "w": 7,
+        "h": 6
+      },
+      "sensors": {
+        "sala_temp": {
+          "type": "temperature",
+          "name": "Temperatura",
+          "value": 21.5,
+          "unit": "°C",
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.15,
+            "y": 0.2
+          },
+          "updatedAt": ""
+        },
+        "sala_power": {
+          "type": "power",
+          "name": "Consumo",
+          "value": 180,
+          "unit": "W",
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.85,
+            "y": 0.2
+          },
+          "updatedAt": ""
+        },
+        "sala_door": {
+          "type": "contact",
+          "name": "Janela",
+          "value": false,
+          "unit": "",
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.5,
+            "y": 0.95
+          },
+          "updatedAt": ""
+        }
+      },
+      "actuators": {
+        "sala_luz": {
+          "type": "light",
+          "name": "Iluminação",
+          "state": true,
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "updatedAt": ""
+        },
+        "sala_estore": {
+          "type": "blinds",
+          "name": "Estores",
+          "state": false,
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.5,
+            "y": 0.9
+          },
+          "updatedAt": ""
+        }
       }
     },
     "cozinha": {
       "name": "Cozinha",
+      "roomType": "kitchen",
       "icon": "fa-kitchen-set",
-      "order": 2,
+      "order": 3,
+      "layout": {
+        "x": 7,
+        "y": 4,
+        "w": 5,
+        "h": 6
+      },
       "sensors": {
-        "cozinha_temp": { "type": "temperature", "name": "Temperatura",       "value": 22, "unit": "°C",  "simulated": true, "updatedAt": "" },
-        "cozinha_hum":  { "type": "humidity",    "name": "Humidade",          "value": 55, "unit": "%",   "simulated": true, "updatedAt": "" },
-        "cozinha_air":  { "type": "air_quality", "name": "Qualidade do ar",   "value": 600, "unit": "ppm", "simulated": true, "updatedAt": "" },
-        "cozinha_door": { "type": "contact",     "name": "Janela",            "value": false, "unit": "", "simulated": true, "updatedAt": "" }
+        "cozinha_temp": {
+          "type": "temperature",
+          "name": "Temperatura",
+          "value": 23.1,
+          "unit": "°C",
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.2,
+            "y": 0.2
+          },
+          "updatedAt": ""
+        },
+        "cozinha_hum": {
+          "type": "humidity",
+          "name": "Humidade",
+          "value": 52,
+          "unit": "%",
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.2,
+            "y": 0.4
+          },
+          "updatedAt": ""
+        },
+        "cozinha_press": {
+          "type": "pressure",
+          "name": "Pressão",
+          "value": 1015,
+          "unit": "hPa",
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.2,
+            "y": 0.6
+          },
+          "updatedAt": ""
+        },
+        "cozinha_gas": {
+          "type": "gas_resistance",
+          "name": "Gás",
+          "value": 85,
+          "unit": "kΩ",
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.2,
+            "y": 0.8
+          },
+          "updatedAt": ""
+        },
+        "cozinha_co2": {
+          "type": "eco2",
+          "name": "CO2",
+          "value": 650,
+          "unit": "ppm",
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.8,
+            "y": 0.2
+          },
+          "updatedAt": ""
+        },
+        "cozinha_tvoc": {
+          "type": "tvoc",
+          "name": "Compostos voláteis",
+          "value": 80,
+          "unit": "ppb",
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.8,
+            "y": 0.4
+          },
+          "updatedAt": ""
+        }
       },
       "actuators": {
-        "cozinha_ac":     { "type": "hvac",   "name": "Ar condicionado", "state": false, "simulated": true, "updatedAt": "" },
-        "cozinha_tomada": { "type": "socket", "name": "Tomada",          "state": true,  "simulated": true, "updatedAt": "" }
+        "cozinha_fan": {
+          "type": "fan",
+          "name": "Ventoinha",
+          "state": true,
+          "level": 40,
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.6,
+            "y": 0.6
+          },
+          "updatedAt": ""
+        },
+        "cozinha_buzzer": {
+          "type": "buzzer",
+          "name": "Alarme",
+          "state": false,
+          "simulated": false,
+          "source": "node2",
+          "pos": {
+            "x": 0.8,
+            "y": 0.85
+          },
+          "updatedAt": ""
+        }
       }
     },
     "jardim": {
       "name": "Jardim",
+      "roomType": "garden",
       "icon": "fa-seedling",
-      "order": 3,
+      "order": 4,
+      "layout": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 5
+      },
       "sensors": {
-        "jardim_soil": { "type": "soil_moisture", "name": "Humidade do solo", "value": 40, "unit": "%", "simulated": true, "updatedAt": "" }
+        "jardim_soil": {
+          "type": "soil_moisture",
+          "name": "Humidade do solo",
+          "value": 38,
+          "unit": "%",
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.3,
+            "y": 0.5
+          },
+          "updatedAt": ""
+        }
       },
       "actuators": {
-        "jardim_rega": { "type": "irrigation", "name": "Rega", "state": false, "simulated": true, "updatedAt": "" }
+        "jardim_rega": {
+          "type": "irrigation",
+          "name": "Rega",
+          "state": false,
+          "simulated": true,
+          "source": "sim",
+          "pos": {
+            "x": 0.6,
+            "y": 0.5
+          },
+          "updatedAt": ""
+        }
       }
     }
   },
   "rules": {
-    "regra_luz_movimento": {
-      "name": "Luz da sala com movimento",
+    "regra_co2": {
+      "name": "Ventilar com CO2 alto",
       "enabled": true,
       "logic": "AND",
       "conditions": [
-        { "source": "sensor", "path": "zones/sala/sensors/sala_pir/value", "operator": "==", "value": true },
-        { "source": "sensor", "path": "zones/sala/sensors/sala_lux/value", "operator": "<",  "value": 200 }
+        {
+          "source": "sensor",
+          "path": "zones/cozinha/sensors/cozinha_co2/value",
+          "operator": ">",
+          "value": 1000
+        }
       ],
       "actions": [
-        { "type": "actuator", "path": "zones/sala/actuators/sala_luz/state", "state": true }
+        {
+          "type": "actuator",
+          "path": "zones/cozinha/actuators/cozinha_fan/state",
+          "state": true
+        }
       ]
     },
-    "regra_estores_calor": {
-      "name": "Fechar estores com calor exterior",
+    "regra_intrusao": {
+      "name": "Alerta de intrusão à noite",
       "enabled": true,
       "logic": "AND",
       "conditions": [
-        { "source": "external", "path": "external/weather/temperature", "operator": ">", "value": 28 }
+        {
+          "source": "sensor",
+          "path": "zones/entrada/sensors/entrada_ir/value",
+          "operator": "==",
+          "value": true
+        },
+        {
+          "source": "external",
+          "path": "external/sun/isDay",
+          "operator": "==",
+          "value": false
+        }
       ],
       "actions": [
-        { "type": "actuator", "path": "zones/sala/actuators/sala_estore/state", "state": true }
+        {
+          "type": "alert",
+          "message": "Movimento na entrada durante a noite",
+          "level": "danger"
+        }
       ]
     },
-    "regra_ar": {
-      "name": "Alerta de qualidade do ar",
+    "regra_luz": {
+      "name": "Luz da entrada quando está escuro",
       "enabled": true,
       "logic": "AND",
       "conditions": [
-        { "source": "sensor", "path": "zones/cozinha/sensors/cozinha_air/value", "operator": ">", "value": 1000 }
+        {
+          "source": "sensor",
+          "path": "zones/entrada/sensors/entrada_ldr/value",
+          "operator": "<",
+          "value": 150
+        }
       ],
       "actions": [
-        { "type": "alert", "message": "Qualidade do ar na cozinha abaixo do nível seguro", "level": "danger" }
+        {
+          "type": "actuator",
+          "path": "zones/entrada/actuators/entrada_luz/state",
+          "state": true
+        }
       ]
     }
   },
   "alerts": {},
   "external": {
-    "weather":    { "temperature": null, "humidity": null, "windSpeed": null, "weatherCode": null },
-    "airQuality": { "europeanAqi": null, "pm2_5": null, "pm10": null },
-    "sun":        { "sunrise": null, "sunset": null, "isDay": null },
+    "weather": {
+      "temperature": null,
+      "humidity": null,
+      "windSpeed": null,
+      "weatherCode": null
+    },
+    "airQuality": {
+      "europeanAqi": null,
+      "pm2_5": null,
+      "pm10": null
+    },
+    "sun": {
+      "sunrise": null,
+      "sunset": null,
+      "isDay": null
+    },
     "updatedAt": null
   }
 }

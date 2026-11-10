@@ -95,3 +95,26 @@
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
 }
+
+/* Editor da casa (ecrã 3) */
+.editor-3d {
+  background: #f4f3ee;
+  border: 1px solid #dee2e6;
+}
+
+/* No editor só interessam os nomes das salas, não os valores dos sensores */
+.editor-3d .label-sensor {
+  display: none;
+}
+
+.device-palette .palette-group + .palette-group {
+  margin-top: 0.75rem;
+}
+
+.device-palette .btn {
+  text-align: left;
+}
+
+.device-palette .btn.active {
+  color: #fff;
+}

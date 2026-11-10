@@ -6,7 +6,11 @@ import { createRoom } from "./room-mesh.js";
 import { createDevice } from "./devices/device-registry.js";
 import { zoneStatus } from "../utils/status.js";
 
-export function createHouse(ctx, environment) {
+/**
+ * @param {object} ctx           contexto devolvido por createScene
+ * @param {object} [environment] ambiente (opcional; o editor não usa)
+ */
+export function createHouse(ctx, environment = null) {
   const root = new THREE.Group();
   root.name = "house";
   ctx.scene.add(root);
@@ -43,6 +47,8 @@ export function createHouse(ctx, environment) {
         }
         if (!entry) {
           const device = createDevice(kind, def, room.size);
+          // Referência usada pelo editor para saber que dispositivo foi clicado
+          device.object.userData.deviceRef = { zoneId, kind, id };
           room.devices.add(device.object);
           entry = { device, type: def.type };
           devices.set(key, entry);
@@ -101,7 +107,7 @@ export function createHouse(ctx, environment) {
       layoutKey = key;
       const box = new THREE.Box3().setFromObject(root);
       if (!box.isEmpty()) {
-        environment.centerOn(box.getCenter(new THREE.Vector3()));
+        environment?.centerOn(box.getCenter(new THREE.Vector3()));
         if (!framedOnce) { ctx.frame(box); framedOnce = true; }
       }
     }
@@ -127,6 +133,8 @@ export function createHouse(ctx, environment) {
     update,
     roomBox,
     houseBox,
+    /** Objetos 3D de todos os dispositivos (para o editor os poder selecionar). */
+    deviceTargets: () => [...devices.values()].map((e) => e.device.object),
     /** Objetos clicáveis: o chão de cada sala. */
     pickTargets: () => [...rooms.values()].map((r) => r.floor),
     select(zoneId) {

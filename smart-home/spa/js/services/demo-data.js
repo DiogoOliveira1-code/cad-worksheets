@@ -4,7 +4,7 @@
 // sem Firebase e sem hardware. Os dados perdem-se ao recarregar a página.
 //
 // Modelo de dados (igual ao da Firebase):
-//   zones/{id}: name, icon, order, layout {x, y, w, h} (metros, vista de cima)
+//   zones/{id}: name, roomType, icon, order, layout {x, y, w, h} (metros, vista de cima)
 //     sensors/{id}:   type, name, value, unit, simulated, source, pos {x, y} (0–1 dentro da sala), updatedAt
 //     actuators/{id}: type, name, state, level?, simulated, source, pos {x, y}, updatedAt
 import { APP_CONFIG } from "../config/app-config.js";
@@ -19,7 +19,7 @@ let store = {
   home: { name: "Casa Inteligente" },
   zones: {
     entrada: {
-      name: "Entrada", icon: "fa-door-open", order: 1,
+      name: "Entrada", roomType: "entrance", icon: "fa-door-open", order: 1,
       layout: { x: 0, y: 0, w: 6, h: 4 },
       sensors: {
         entrada_ir:    { type: "ir_barrier", name: "Barreira IR",  value: false, unit: "",   simulated: false, source: "node1", pos: { x: 0.5, y: 0.15 } },
@@ -31,7 +31,7 @@ let store = {
       }
     },
     sala: {
-      name: "Sala", icon: "fa-couch", order: 2,
+      name: "Sala", roomType: "living", icon: "fa-couch", order: 2,
       layout: { x: 0, y: 4, w: 7, h: 6 },
       sensors: {
         sala_temp:  { type: "temperature", name: "Temperatura", value: 21.5, unit: "°C", simulated: true, source: "sim", pos: { x: 0.15, y: 0.2 } },
@@ -44,7 +44,7 @@ let store = {
       }
     },
     cozinha: {
-      name: "Cozinha", icon: "fa-kitchen-set", order: 3,
+      name: "Cozinha", roomType: "kitchen", icon: "fa-kitchen-set", order: 3,
       layout: { x: 7, y: 4, w: 5, h: 6 },
       sensors: {
         cozinha_temp:  { type: "temperature",    name: "Temperatura",        value: 23.1, unit: "°C",  simulated: false, source: "node2", pos: { x: 0.2, y: 0.2 } },
@@ -60,7 +60,7 @@ let store = {
       }
     },
     jardim: {
-      name: "Jardim", icon: "fa-seedling", order: 4,
+      name: "Jardim", roomType: "garden", icon: "fa-seedling", order: 4,
       layout: { x: 0, y: 10, w: 12, h: 5 },
       sensors: {
         jardim_soil: { type: "soil_moisture", name: "Humidade do solo", value: 38, unit: "%", simulated: true, source: "sim", pos: { x: 0.3, y: 0.5 } }
@@ -257,7 +257,9 @@ function tick() {
       }
 
       const r = RANGES[s.type];
-      if (!r || typeof s.value !== "number") continue;
+      if (!r) continue;
+      // Sensor acabado de criar no editor: começa a meio da gama
+      if (typeof s.value !== "number") s.value = Math.round((r.min + r.max) / 2);
 
       let delta = (Math.random() - 0.5) * 2 * r.noise;
       for (const a of actuators) {
